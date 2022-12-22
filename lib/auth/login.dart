@@ -62,6 +62,13 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pop(context);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (c) => const HomeScreen()));
+      }).catchError((error) {
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (c) {
+              return ErrorDialog(message: error.message.toString());
+            });
       });
     }
   }
@@ -72,13 +79,19 @@ class _LoginScreenState extends State<LoginScreen> {
         .doc(currentUser.uid)
         .get()
         .then((snapshot) async {
-      await sharedPreferences!.setString("sellerUID", currentUser.uid);
-      await sharedPreferences!
-          .setString("sellerName", snapshot.data()!["sellerName"]);
-      await sharedPreferences!.setString(
-          "sellerProfilePicture", snapshot.data()!["sellerProfilePicture"]);
-      await sharedPreferences!
-          .setString("sellerEmail", emailController.text.trim());
+          if(snapshot.exists) {
+            await sharedPreferences!.setString("sellerUID", currentUser.uid);
+            await sharedPreferences!
+                .setString("sellerName", snapshot.data()!["sellerName"]);
+            await sharedPreferences!.setString(
+                "sellerProfilePicture",
+                snapshot.data()!["sellerProfilePicture"]);
+            await sharedPreferences!
+                .setString("sellerEmail", emailController.text.trim());
+          } else {
+            firebaseAuth.signOut();
+            throw Exception("You are not Authorised");
+          }
     });
   }
 
