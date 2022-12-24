@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:seller_app/auth/auth_screen.dart';
 import 'package:seller_app/global/global.dart';
+import 'package:seller_app/upload/menu_upload_screen.dart';
+import 'package:seller_app/widgets/home_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -23,21 +25,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   stops: [0.0, 1.0],
                   tileMode: TileMode.clamp)),
         ),
-        title: Text(sharedPreferences!.getString("name")!),
+        title: Text(sharedPreferences!.getString("sellerName")!, style: const TextStyle(fontSize: 30, fontFamily: "Lobster"),),
         centerTitle: true,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: true,
+        actions: [
+          IconButton(onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (c) => const MenuUploadScreen()));
+          }, icon: const Icon(Icons.post_add, color: Colors.white,))
+        ],
       ),
-      body: Center(
-        child: ElevatedButton(
-          child: Text("Logout"),
-          onPressed: () {
-            firebaseAuth.signOut().then((value) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (c) => const AuthScreen()));
-            });
-          },
-        ),
-      ),
+      drawer: const HomeDrawer(),
+      body: Center(),
     );
   }
 }
